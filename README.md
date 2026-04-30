@@ -1,2 +1,0 @@
-# abjad
-Abjad Calculator
