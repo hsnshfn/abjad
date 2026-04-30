@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>حساب ابجد</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      min-height: 100%;
+      background: #ede7d9;
+      font-family: 'Vazirmatn', sans-serif;
+      direction: rtl;
+    }
+
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      background: #f5efe4;
+      padding: clamp(1rem, 5vw, 2.5rem);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      border-left: 1px solid #d4b87a;
+      border-right: 1px solid #d4b87a;
+    }
+
+    .app-header {
+      text-align: center;
+      padding-top: 0.5rem;
+    }
+
+    .app-title {
+      font-size: clamp(28px, 7vw, 40px);
+      font-weight: 700;
+      color: #3d2b0f;
+      letter-spacing: 1px;
+    }
+
+    .app-sub {
+      font-size: clamp(14px, 3.5vw, 18px);
+      color: #8a6a3a;
+      font-weight: 300;
+      margin-top: 4px;
+    }
+
+    .ornament {
+      text-align: center;
+      color: #c9a96e;
+      font-size: clamp(16px, 4vw, 22px);
+      letter-spacing: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      background: #fff;
+      border: 2px solid #c9a96e;
+      border-radius: 12px;
+      color: #1e1409;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: clamp(22px, 5.5vw, 30px);
+      padding: clamp(12px, 3vw, 18px) clamp(14px, 3.5vw, 20px);
+      resize: none;
+      direction: rtl;
+      line-height: 1.8;
+      outline: none;
+      min-height: 100px;
+    }
+
+    textarea::placeholder {
+      color: #c0a87a;
+      font-size: clamp(16px, 4vw, 20px);
+    }
+
+    textarea:focus {
+      border-color: #8a5c1e;
+      box-shadow: 0 0 0 4px rgba(201,169,110,0.2);
+    }
+
+    .btn {
+      width: 100%;
+      padding: clamp(14px, 4vw, 18px);
+      background: #5c3a0f;
+      border: none;
+      border-radius: 12px;
+      color: #f5efe4;
+      font-family: 'Vazirmatn', sans-serif;
+      font-size: clamp(17px, 4.5vw, 22px);
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 2px;
+      touch-action: manipulation;
+    }
+
+    .btn:active { background: #3d2609; transform: scale(0.99); }
+
+    .sep {
+      border: none;
+      border-top: 1.5px solid #c9a96e;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(8px, 2.5vw, 14px);
+    }
+
+    .card {
+      background: #fff;
+      border: 1.5px solid #c9a96e;
+      border-radius: 14px;
+      padding: clamp(14px, 3.5vw, 20px) 0.5rem;
+      text-align: center;
+    }
+
+    .card-label {
+      font-size: clamp(14px, 3.5vw, 18px);
+      color: #8a6a3a;
+      font-weight: 400;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .card-num {
+      font-size: clamp(34px, 9vw, 52px);
+      font-weight: 700;
+      color: #3d2b0f;
+      line-height: 1;
+    }
+
+    .bd-title {
+      font-size: clamp(14px, 3.5vw, 17px);
+      color: #8a6a3a;
+      font-weight: 400;
+    }
+
+    .chars {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(6px, 2vw, 10px);
+      direction: rtl;
+    }
+
+    .ch {
+      background: #fff;
+      border: 1px solid #d4b87a;
+      border-radius: 10px;
+      padding: clamp(8px, 2vw, 12px) clamp(10px, 2.5vw, 14px);
+      text-align: center;
+      min-width: clamp(46px, 12vw, 60px);
+    }
+
+    .ch-c {
+      font-size: clamp(20px, 5vw, 26px);
+      color: #1e1409;
+      font-weight: 500;
+    }
+
+    .ch-v {
+      font-size: clamp(12px, 3vw, 15px);
+      color: #8a6a3a;
+      margin-top: 4px;
+    }
+
+    .ign {
+      font-size: clamp(12px, 3vw, 15px);
+      color: #b08040;
+    }
+
+    #out { display: flex; flex-direction: column; gap: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <div class="app-header">
+      <div class="app-title">حساب ابجد</div>
+      <div class="app-sub">کبیر · وسیط · صغیر</div>
+    </div>
+
+    <div class="ornament">✦ ✦ ✦</div>
+
+    <textarea id="inp" rows="2" placeholder="عبارت عربی یا فارسی را اینجا بنویسید..."></textarea>
+    <button class="btn" onclick="calc()">محاسبه</button>
+
+    <div id="out" style="display:none;">
+      <hr class="sep">
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">کبیر</div>
+          <div class="card-num" id="rk">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">وسیط</div>
+          <div class="card-num" id="rw">—</div>
+        </div>
+        <div class="card">
+          <div class="card-label">صغیر</div>
+          <div class="card-num" id="rs">—</div>
+        </div>
+      </div>
+      <div class="bd-title">ریز حروف</div>
+      <div class="chars" id="bd"></div>
+      <div class="ign" id="ig"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const AB = {
+      'ا':1,'أ':1,'إ':1,'آ':1,'ٱ':1,'ء':1,
+      'ب':2,'پ':2,
+      'ج':3,'چ':3,
+      'د':4,
+      'ه':5,'ة':400,
+      'و':6,'ؤ':6,
+      'ز':7,'ژ':7,
+      'ح':8,
+      'ط':9,
+      'ی':10,'ي':10,'ى':10,'ئ':10,
+      'ک':20,'ك':20,'گ':20,
+      'ل':30,'م':40,'ن':50,'س':60,'ع':70,'ف':80,'ص':90,
+      'ق':100,'ر':200,'ش':300,'ت':400,'ث':500,'خ':600,'ذ':700,'ض':800,'ظ':900,'غ':1000
+    };
+
+    const fa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+
+    function wasit(k) {
+      const d = [];
+      let n = k;
+      while (n > 0) { d.push(n % 10); n = Math.floor(n / 10); }
+      let w = (d[0] || 0) + (d[1] || 0);
+      for (let i = 2; i < d.length; i++) w += d[i] * Math.pow(10, i - 1);
+      return w;
+    }
+
+    function saghir(w) {
+      const u = w % 10, t = Math.floor(w / 10) % 10;
+      let s = u + t;
+      while (s >= 10) s -= 9;
+      return s;
+    }
+
+    function calc() {
+      const t = document.getElementById('inp').value;
+      let k = 0;
+      const cs = [], sk = [];
+      for (const c of t) {
+        if (AB[c] !== undefined) { k += AB[c]; cs.push({ c, v: AB[c] }); }
+        else if (c.trim() && c !== '\n') sk.push(c);
+      }
+      if (!cs.length) return;
+
+      const w = wasit(k), s = saghir(w);
+      document.getElementById('rk').textContent = fa(k);
+      document.getElementById('rw').textContent = fa(w);
+      document.getElementById('rs').textContent = fa(s);
+
+      document.getElementById('bd').innerHTML = cs
+        .map(({ c, v }) => `<div class="ch"><div class="ch-c">${c}</div><div class="ch-v">${fa(v)}</div></div>`)
+        .join('');
+
+      const ig = document.getElementById('ig');
+      ig.textContent = sk.length ? `نادیده‌گرفته‌شده: ${[...new Set(sk)].join(' ')}` : '';
+
+      document.getElementById('out').style.display = 'flex';
+    }
+
+    document.getElementById('inp').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); calc(); }
+    });
+  </script>
+</body>
+</html>
