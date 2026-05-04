@@ -4,21 +4,60 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>حساب ابجد</title>
+<!-- فاویکون inline SVG به base64 -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231a4535'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='serif' font-size='18' font-weight='bold' fill='%23c9a96e'%3Eا%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#e8dcc8;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:1rem 0;font-family:'Vazirmatn',sans-serif;}
-.app{width:100%;max-width:420px;background:#f5efe4;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.18);}
+
+body{
+  background:#e8dcc8;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  font-family:'Vazirmatn',sans-serif;
+}
+
+.app{
+  width:100%;
+  max-width:420px;
+  background:#f5efe4;
+  overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,0.18);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+/* صفحات */
+.page { display:none; flex:1; overflow-y:auto; padding-bottom:70px; }
+.page.active { display:block; }
+
 .arch-wrap{display:block;width:100%;}
 .main{padding:1.2rem 1.4rem 0;}
-textarea{width:100%;background:#fffaf3;border:1.5px solid #c9a96e;border-radius:10px;color:#1e1409;font-family:'Vazirmatn',sans-serif;font-size:20px;padding:14px 16px;resize:none;direction:rtl;outline:none;line-height:1.8;}
+
+textarea{
+  width:100%;background:#fffaf3;border:1.5px solid #c9a96e;
+  border-radius:10px;color:#1e1409;font-family:'Vazirmatn',sans-serif;
+  font-size:20px;padding:14px 16px;resize:none;direction:rtl;outline:none;line-height:1.8;
+}
 textarea::placeholder{color:#c0a870;font-size:15px;}
 textarea:focus{border-color:#1a4535;box-shadow:0 0 0 3px rgba(26,69,53,0.1);}
+
 .cnt{font-size:12px;color:#9a8060;margin-top:5px;text-align:left;padding-left:4px;}
-.cbtn{width:100%;margin-top:12px;padding:14px;background:#1a4535;border:none;border-radius:10px;color:#c9a96e;font-family:'Vazirmatn',sans-serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:3px;margin-bottom:1.2rem;transition:background .2s;}
+
+.cbtn{
+  width:100%;margin-top:12px;padding:14px;background:#1a4535;border:none;
+  border-radius:10px;color:#c9a96e;font-family:'Vazirmatn',sans-serif;
+  font-size:18px;font-weight:700;cursor:pointer;letter-spacing:3px;
+  margin-bottom:1.2rem;transition:background .2s;
+}
 .cbtn:hover{background:#0f2b20;}
 .cbtn:active{transform:scale(0.99);}
+
 #out{display:none;}
 .rbox{background:#fffaf3;border:1.5px solid #c9a96e;border-radius:12px;padding:1rem;margin-bottom:.8rem;}
 .rbl{font-size:14px;color:#1a4535;font-weight:600;margin-bottom:.8rem;display:flex;align-items:center;gap:6px;}
@@ -30,6 +69,7 @@ textarea:focus{border-color:#1a4535;box-shadow:0 0 0 3px rgba(26,69,53,0.1);}
 .steps{background:#f0e6ce;border-right:3px solid #c9a96e;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#3d2000;line-height:2;}
 .dv{text-align:center;font-size:13px;color:#1a4535;margin:.8rem 0 10px;display:flex;align-items:center;gap:8px;font-weight:500;}
 .dv::before,.dv::after{content:'';flex:1;border-top:1px solid #c9a96e;}
+
 table{width:100%;border-collapse:collapse;}
 th{background:#1a4535;color:#c9a96e;padding:10px 6px;font-family:'Vazirmatn',sans-serif;font-size:14px;text-align:center;font-weight:500;}
 th:first-child{border-radius:0 6px 0 0;}
@@ -37,83 +77,179 @@ th:last-child{border-radius:6px 0 0 0;}
 td{border-bottom:1px solid #e8d8b8;padding:10px 6px;text-align:center;font-size:18px;color:#2c1810;}
 tr:nth-child(even) td{background:rgba(240,230,206,.5);}
 .ign{margin-top:10px;font-size:12px;color:#b08040;text-align:center;}
-.bnav{background:#1a4535;padding:10px 0 8px;display:flex;justify-content:space-around;margin-top:1rem;}
-.ni{text-align:center;color:rgba(201,169,110,.35);font-size:11px;cursor:pointer;padding:4px 8px;}
+
+/* ===== باتم نویگیشن ثابت ===== */
+.bnav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  max-width:420px;
+  background:#1a4535;
+  padding:10px 0 12px;
+  display:flex;
+  justify-content:space-around;
+  z-index:100;
+  border-top:1px solid rgba(201,169,110,0.3);
+}
+.ni{text-align:center;color:rgba(201,169,110,.35);font-size:11px;cursor:pointer;padding:4px 8px;transition:color .2s;}
 .ni.on{color:#c9a96e;}
-.nic{font-size:16px;display:block;margin-bottom:3px;}
+.ni:active{opacity:.7;}
+.nic{font-size:18px;display:block;margin-bottom:3px;}
+
+/* ===== صفحه درباره ===== */
+.about-wrap{padding:1.4rem;}
+.about-logo{text-align:center;margin-bottom:1.5rem;}
+.about-logo-text{font-size:52px;font-weight:900;color:#1a4535;line-height:1;}
+.about-logo-sub{font-size:13px;color:#c9a96e;letter-spacing:3px;margin-top:4px;}
+.about-ornament{text-align:center;color:#c9a96e;font-size:14px;letter-spacing:8px;margin:1rem 0;}
+
+.about-card{background:#fffaf3;border:1.5px solid #c9a96e;border-radius:12px;padding:1rem 1.2rem;margin-bottom:1rem;}
+.about-card h3{font-size:15px;color:#1a4535;font-weight:700;margin-bottom:.6rem;display:flex;align-items:center;gap:6px;}
+.about-card h3::before{content:'◆';font-size:9px;color:#c9a96e;}
+.about-card p{font-size:14px;color:#4a3010;line-height:2;text-align:justify;}
+
+.about-formula{background:#f0e6ce;border-right:3px solid #c9a96e;border-radius:0 8px 8px 0;padding:10px 14px;margin-top:.6rem;font-size:13px;color:#3d2000;line-height:2;}
+
+.about-ver{text-align:center;font-size:12px;color:#b0946a;margin-top:1.5rem;padding-bottom:.5rem;}
 </style>
 </head>
 <body>
 <div class="app">
 
-<svg class="arch-wrap" viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <pattern id="grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-      <path d="M10 0L20 10L10 20L0 10Z" fill="none" stroke="rgba(201,169,110,0.22)" stroke-width="0.8"/>
-    </pattern>
-    <clipPath id="archClip">
-      <path d="M0,275L0,148C2,84 56,42 126,22 168,8 192,1 200,0 208,1 232,8 274,22 344,42 398,84 400,148L400,275Z"/>
-    </clipPath>
-  </defs>
-  <path d="M0,275L0,148C2,84 56,42 126,22 168,8 192,1 200,0 208,1 232,8 274,22 344,42 398,84 400,148L400,275Z" fill="#1a4535"/>
-  <rect x="0" y="0" width="400" height="275" fill="url(#grid)" clip-path="url(#archClip)"/>
-  <path d="M0,275L0,148C2,84 56,42 126,22 168,8 192,1 200,0 208,1 232,8 274,22 344,42 398,84 400,148L400,275" fill="none" stroke="#c9a96e" stroke-width="2"/>
-  <path d="M44,275L44,162C46,108 82,72 136,53 170,41 191,35 200,32 209,35 230,41 264,53 318,72 354,108 356,162L356,275Z" fill="#f5efe4"/>
-  <path d="M44,275L44,162C46,108 82,72 136,53 170,41 191,35 200,32 209,35 230,41 264,53 318,72 354,108 356,162L356,275" fill="none" stroke="#c9a96e" stroke-width="1"/>
-  <path d="M7,7L48,7 M7,7L7,48" stroke="#c9a96e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-  <path d="M15,7L7,15 M23,7L7,23 M31,7L7,31 M39,7L7,39" stroke="#c9a96e" stroke-width="0.6" fill="none"/>
-  <circle cx="7" cy="7" r="3" fill="#c9a96e"/>
-  <path d="M393,7L352,7 M393,7L393,48" stroke="#c9a96e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-  <path d="M385,7L393,15 M377,7L393,23 M369,7L393,31 M361,7L393,39" stroke="#c9a96e" stroke-width="0.6" fill="none"/>
-  <circle cx="393" cy="7" r="3" fill="#c9a96e"/>
-  <g transform="translate(186,0)">
-    <line x1="14" y1="0" x2="14" y2="9" stroke="#c9a96e" stroke-width="1.8" stroke-linecap="round"/>
-    <path d="M5,9Q14,6 23,9L23,15L5,15Z" fill="#c9a96e"/>
-    <path d="M7,15L5,33Q14,37 23,33L21,15Z" fill="none" stroke="#c9a96e" stroke-width="1.5"/>
-    <line x1="10" y1="15" x2="9" y2="33" stroke="#c9a96e" stroke-width="0.9"/>
-    <line x1="14" y1="15" x2="14" y2="33" stroke="#c9a96e" stroke-width="0.9"/>
-    <line x1="18" y1="15" x2="19" y2="33" stroke="#c9a96e" stroke-width="0.9"/>
-    <path d="M5,33Q14,38.5 23,33L24,37.5Q14,43.5 4,37.5Z" fill="#c9a96e"/>
-    <ellipse cx="14" cy="24" rx="5" ry="6.5" fill="rgba(255,210,50,0.3)"/>
-  </g>
-  <text x="200" y="158" text-anchor="middle" dominant-baseline="middle" font-family="Vazirmatn,sans-serif" font-size="62" font-weight="900" fill="#1a4535">ابجد</text>
-  <text x="200" y="186" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#c9a96e" letter-spacing="12">* * *</text>
-  <text x="200" y="210" text-anchor="middle" font-family="Vazirmatn,sans-serif" font-size="12" font-weight="300" fill="#7a6040">محاسبه عدد عبارات بر اساس ابجد</text>
-</svg>
+  <!-- ===== صفحه محاسبه ===== -->
+  <div id="page-calc" class="page active">
+    <svg class="arch-wrap" viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M10 0L20 10L10 20L0 10Z" fill="none" stroke="rgba(201,169,110,0.22)" stroke-width="0.8"/>
+        </pattern>
+        <clipPath id="archClip">
+          <path d="M0,275L0,148C2,84 56,42 126,22 168,8 192,1 200,0 208,1 232,8 274,22 344,42 398,84 400,148L400,275Z"/>
+        </clipPath>
+      </defs>
+      <path d="M0,275L0,148C2,84 56,42 126,22 168,8 192,1 200,0 208,1 232,8 274,22 344,42 398,84 400,148L400,275Z" fill="#1a4535"/>
+      <rect x="0" y="0" width="400" height="275" fill="url(#grid)" clip-path="url(#archClip)"/>
+      <path d="M0,275L0,148C2,84 56,42 126,22 168,8 192,1 200,0 208,1 232,8 274,22 344,42 398,84 400,148L400,275" fill="none" stroke="#c9a96e" stroke-width="2"/>
+      <path d="M44,275L44,162C46,108 82,72 136,53 170,41 191,35 200,32 209,35 230,41 264,53 318,72 354,108 356,162L356,275Z" fill="#f5efe4"/>
+      <path d="M44,275L44,162C46,108 82,72 136,53 170,41 191,35 200,32 209,35 230,41 264,53 318,72 354,108 356,162L356,275" fill="none" stroke="#c9a96e" stroke-width="1"/>
+      <path d="M7,7L48,7 M7,7L7,48" stroke="#c9a96e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M15,7L7,15 M23,7L7,23 M31,7L7,31 M39,7L7,39" stroke="#c9a96e" stroke-width="0.6" fill="none"/>
+      <circle cx="7" cy="7" r="3" fill="#c9a96e"/>
+      <path d="M393,7L352,7 M393,7L393,48" stroke="#c9a96e" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M385,7L393,15 M377,7L393,23 M369,7L393,31 M361,7L393,39" stroke="#c9a96e" stroke-width="0.6" fill="none"/>
+      <circle cx="393" cy="7" r="3" fill="#c9a96e"/>
+      <g transform="translate(186,0)">
+        <line x1="14" y1="0" x2="14" y2="9" stroke="#c9a96e" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M5,9Q14,6 23,9L23,15L5,15Z" fill="#c9a96e"/>
+        <path d="M7,15L5,33Q14,37 23,33L21,15Z" fill="none" stroke="#c9a96e" stroke-width="1.5"/>
+        <line x1="10" y1="15" x2="9" y2="33" stroke="#c9a96e" stroke-width="0.9"/>
+        <line x1="14" y1="15" x2="14" y2="33" stroke="#c9a96e" stroke-width="0.9"/>
+        <line x1="18" y1="15" x2="19" y2="33" stroke="#c9a96e" stroke-width="0.9"/>
+        <path d="M5,33Q14,38.5 23,33L24,37.5Q14,43.5 4,37.5Z" fill="#c9a96e"/>
+        <ellipse cx="14" cy="24" rx="5" ry="6.5" fill="rgba(255,210,50,0.3)"/>
+      </g>
+      <text x="200" y="158" text-anchor="middle" dominant-baseline="middle" font-family="Vazirmatn,sans-serif" font-size="62" font-weight="900" fill="#1a4535">ابجد</text>
+      <text x="200" y="186" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#c9a96e" letter-spacing="12">* * *</text>
+      <text x="200" y="210" text-anchor="middle" font-family="Vazirmatn,sans-serif" font-size="12" font-weight="300" fill="#7a6040">محاسبه عدد عبارات بر اساس ابجد</text>
+    </svg>
 
-<div class="main">
-  <textarea id="inp" rows="3" maxlength="200"
-    placeholder="عبارت خود را وارد کنید..."
-    oninput="document.getElementById('cnt').textContent=this.value.length"></textarea>
-  <div class="cnt"><span id="cnt">0</span> / 200</div>
-  <button class="cbtn" onclick="calc()">محاسبه</button>
+    <div class="main">
+      <textarea id="inp" rows="3" maxlength="200"
+        placeholder="عبارت خود را وارد کنید..."
+        oninput="document.getElementById('cnt').textContent=this.value.length"></textarea>
+      <div class="cnt"><span id="cnt">0</span> / 200</div>
+      <button class="cbtn" onclick="calc()">محاسبه</button>
 
-  <div id="out">
-    <div class="rbox">
-      <div class="rbl">نتیجه محاسبه</div>
-      <div class="rcds">
-        <div class="rc"><div class="rcl">کبیر</div><div class="rcn" id="rk">—</div></div>
-        <div class="rc"><div class="rcl">وسیط</div><div class="rcn" id="rw">—</div></div>
-        <div class="rc"><div class="rcl">صغیر</div><div class="rcn" id="rs">—</div></div>
+      <div id="out">
+        <div class="rbox">
+          <div class="rbl">نتیجه محاسبه</div>
+          <div class="rcds">
+            <div class="rc"><div class="rcl">کبیر</div><div class="rcn" id="rk">—</div></div>
+            <div class="rc"><div class="rcl">وسیط</div><div class="rcn" id="rw">—</div></div>
+            <div class="rc"><div class="rcl">صغیر</div><div class="rcn" id="rs">—</div></div>
+          </div>
+          <div class="steps" id="st"></div>
+          <div class="dv">تفکیک حروف و ارزش ابجد</div>
+          <table>
+            <thead><tr><th>حرف</th><th>ارزش ابجد</th></tr></thead>
+            <tbody id="tb"></tbody>
+          </table>
+          <div class="ign" id="ig"></div>
+        </div>
       </div>
-      <div class="steps" id="st"></div>
-      <div class="dv">تفکیک حروف و ارزش ابجد</div>
-      <table>
-        <thead><tr><th>حرف</th><th>ارزش ابجد</th></tr></thead>
-        <tbody id="tb"></tbody>
-      </table>
-      <div class="ign" id="ig"></div>
     </div>
   </div>
-</div>
 
-<div class="bnav">
-  <div class="ni"><span class="nic">ℹ</span>درباره</div>
-  <div class="ni"><span class="nic">≡</span>جدول</div>
-  <div class="ni on"><span class="nic">◎</span>محاسبه</div>
-  <div class="ni"><span class="nic">◷</span>تاریخچه</div>
-  <div class="ni"><span class="nic">★</span>علاقه‌مندی</div>
-</div>
+  <!-- ===== صفحه درباره ===== -->
+  <div id="page-about" class="page">
+    <div class="about-wrap">
+      <div class="about-logo">
+        <div class="about-logo-text">ابجد</div>
+        <div class="about-logo-sub">حساب ابجد</div>
+      </div>
+      <div class="about-ornament">✦ ✦ ✦</div>
+
+      <div class="about-card">
+        <h3>ابجد چیست؟</h3>
+        <p>حساب ابجد یکی از علوم سنتی اسلامی است که در آن به هر حرف عربی یک عدد نسبت داده می‌شود. این علم در تفسیر، دعا، و محاسبات روحانی کاربرد گسترده‌ای دارد.</p>
+      </div>
+
+      <div class="about-card">
+        <h3>عدد کبیر</h3>
+        <p>مجموع مقادیر کامل ابجدی تمام حروف عبارت است.</p>
+        <div class="about-formula">مثال: «علی» = ع(۷۰) + ل(۳۰) + ی(۱۰) = <b>۱۱۰</b></div>
+      </div>
+
+      <div class="about-card">
+        <h3>عدد وسیط</h3>
+        <p>یکان و دهگان کبیر جمع می‌شوند و یکانِ وسیط را می‌سازند. صدگان به بالا به دهگان وسیط تبدیل می‌شوند.</p>
+        <div class="about-formula">مثال: کبیر ۱۱۰ → یکان+دهگان = ۱+۰ = ۱ | صدگان = ۱ → وسیط = <b>۱۱</b></div>
+      </div>
+
+      <div class="about-card">
+        <h3>عدد صغیر</h3>
+        <p>جمع تمام ارقام عدد وسیط. اگر نتیجه ۱۰ یا بیشتر شد، ۹ تا ۹ تا کم می‌کنیم تا تک‌رقمی شود.</p>
+        <div class="about-formula">مثال: وسیط ۱۱ → ۱+۱ = ۲ → صغیر = <b>۲</b></div>
+      </div>
+
+      <div class="about-card">
+        <h3>جدول مقادیر ابجد</h3>
+        <p style="margin-bottom:.6rem">مقادیر اصلی حروف عربی:</p>
+        <table>
+          <thead><tr><th>حرف</th><th>مقدار</th><th>حرف</th><th>مقدار</th></tr></thead>
+          <tbody>
+            <tr><td>ا</td><td>۱</td><td>ل</td><td>۳۰</td></tr>
+            <tr><td>ب</td><td>۲</td><td>م</td><td>۴۰</td></tr>
+            <tr><td>ج</td><td>۳</td><td>ن</td><td>۵۰</td></tr>
+            <tr><td>د</td><td>۴</td><td>س</td><td>۶۰</td></tr>
+            <tr><td>ه</td><td>۵</td><td>ع</td><td>۷۰</td></tr>
+            <tr><td>و</td><td>۶</td><td>ف</td><td>۸۰</td></tr>
+            <tr><td>ز</td><td>۷</td><td>ص</td><td>۹۰</td></tr>
+            <tr><td>ح</td><td>۸</td><td>ق</td><td>۱۰۰</td></tr>
+            <tr><td>ط</td><td>۹</td><td>ر</td><td>۲۰۰</td></tr>
+            <tr><td>ی</td><td>۱۰</td><td>ش</td><td>۳۰۰</td></tr>
+            <tr><td>ک</td><td>۲۰</td><td>ت</td><td>۴۰۰</td></tr>
+            <tr><td>ث</td><td>۵۰۰</td><td>خ</td><td>۶۰۰</td></tr>
+            <tr><td>ذ</td><td>۷۰۰</td><td>ض</td><td>۸۰۰</td></tr>
+            <tr><td>ظ</td><td>۹۰۰</td><td>غ</td><td>۱۰۰۰</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="about-ver">نسخه ۱.۰ · ساخته‌شده با ❤️</div>
+    </div>
+  </div>
+
+  <!-- ===== باتم نویگیشن ثابت ===== -->
+  <nav class="bnav">
+    <div class="ni on" onclick="showPage('about')" id="nav-about">
+      <span class="nic">ℹ</span>درباره
+    </div>
+    <div class="ni" onclick="showPage('calc')" id="nav-calc" style="display:none"></div>
+    <div class="ni on" onclick="showPage('calc')" id="nav-main">
+      <span class="nic">◎</span>محاسبه
+    </div>
+  </nav>
 
 </div>
 
@@ -131,14 +267,12 @@ const AB = {
 
 const fa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 
-// وسیط: یکان+دهگان کبیر → یکان وسیط | صدگان به بالا → دهگان به بالا
 function calcWasit(k) {
   const low = (k % 10) + (Math.floor(k / 10) % 10);
   const high = Math.floor(k / 100);
   return high * 10 + low;
 }
 
-// صغیر (اصلاح‌شده): جمع همه ارقام وسیط، اگر ≥۱۰ منهای ۹ تا تک‌رقمی بشه
 function calcSaghir(w) {
   let s = String(w).split('').reduce((a, c) => a + parseInt(c), 0);
   while (s >= 10) s -= 9;
@@ -164,10 +298,10 @@ function calc() {
 
   const wDigits = String(w).split('').map(Number);
   const sumD = wDigits.reduce((a, b) => a + b, 0);
-  const u = k % 10, d = Math.floor(k / 10) % 10;
+  const u = k % 10, d2 = Math.floor(k / 10) % 10;
   let stepsHtml =
     `<b>کبیر:</b> ${fa(k)}<br>` +
-    `<b>وسیط:</b> یکان+دهگان = ${fa(u)}+${fa(d)} = ${fa(u+d)} | صدگان به بالا = ${fa(Math.floor(k/100))} → <b>${fa(w)}</b><br>` +
+    `<b>وسیط:</b> یکان+دهگان = ${fa(u)}+${fa(d2)} = ${fa(u+d2)} | صدگان به بالا = ${fa(Math.floor(k/100))} → <b>${fa(w)}</b><br>` +
     `<b>صغیر:</b> جمع ارقام وسیط: ${wDigits.map(fa).join('+')} = ${fa(sumD)}`;
   if (sumD >= 10) stepsHtml += ` ← منهای ۹ → <b>${fa(s)}</b>`;
   document.getElementById('st').innerHTML = stepsHtml;
@@ -184,16 +318,21 @@ function calc() {
 document.getElementById('inp').addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); calc(); }
 });
-</script>
-<script>
-  // Initialize Telegram Web App
-  window.Telegram.WebApp.ready();
-  
-  // Optional: Expand the mini app to full height
-  window.Telegram.WebApp.expand();
-  
-  // Optional: Set the app background color to match your design
-  window.Telegram.WebApp.setBackgroundColor("#f5efe4");
+
+// ===== مدیریت صفحات =====
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
+  if (name === 'calc') document.getElementById('nav-main').classList.add('on');
+  if (name === 'about') document.getElementById('nav-about').classList.add('on');
+}
+
+// Telegram
+window.Telegram.WebApp.ready();
+window.Telegram.WebApp.expand();
+window.Telegram.WebApp.setBackgroundColor("#f5efe4");
 </script>
 </body>
 </html>
